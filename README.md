@@ -1,3 +1,5 @@
+[English](README.md) | [繁體中文](README.zh.md)
+
 # image-prompt
 
 A Claude skill that converts vague descriptions into professional, structured image generation prompts compatible with Midjourney, DALL-E, Flux, Stable Diffusion, and other text-to-image models.
