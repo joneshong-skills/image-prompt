@@ -139,6 +139,25 @@ petals drifting, masterpiece, best quality, highly detailed, 8K UHD
 - Keep prompt length under 200 tokens for best results (75-150 is ideal)
 - Order components by importance — most models weight early tokens more heavily
 
+## Continuous Improvement
+
+This skill evolves with each use. After every invocation:
+
+1. **Reflect** — Identify what worked, what caused friction, and any unexpected issues
+2. **Record** — Append a concise lesson to `lessons.md` in this skill's directory
+3. **Refine** — When a pattern recurs (2+ times), update SKILL.md directly
+
+### lessons.md Entry Format
+
+```
+### YYYY-MM-DD — Brief title
+- **Friction**: What went wrong or was suboptimal
+- **Fix**: How it was resolved
+- **Rule**: Generalizable takeaway for future invocations
+```
+
+Accumulated lessons signal when to run `/skill-optimizer` for a deeper structural review.
+
 ## Additional Resources
 
 ### Reference Files
