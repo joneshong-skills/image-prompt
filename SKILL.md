@@ -30,6 +30,15 @@ clarification question before proceeding.
 
 ### Step 2 — Build Structured Prompt
 
+**Two paths — pick based on scope:**
+
+| Scope | Use | Why |
+|---|---|---|
+| 單張快圖 / 探索性 / user 要 prompt string | **7-component framework**（下方） | 快、通用、零 schema 負擔 |
+| 多張變體一致 / character 系列 / product 系列 / poster / UI mockup / storyboard / 要 JSON 重用 | **Composable Meta-Schema**（讀 [`references/meta-schema.md`](references/meta-schema.md)） | 結構化、9 個 scope extensions、Parameter Tiers、category-specific negative prompts |
+
+預設走 7-component；當 user 提到「角色變體」「系列」「多張一致」「要 JSON」「要重用」任一關鍵字，切換到 meta-schema。
+
 Assemble the prompt using the **7-Component Framework**:
 
 | # | Component | Description | Example |
@@ -161,5 +170,11 @@ Accumulated lessons signal when to run `/skill-optimizer` for a deeper structura
 ## Additional Resources
 
 ### Reference Files
-- **`references/platform-guide.md`** — Platform-specific syntax for Midjourney, DALL-E, Flux, SD
-- **`references/style-dictionary.md`** — 200+ curated style/mood/lighting/composition keywords
+
+| File | Load when | Purpose |
+|---|---|---|
+| `references/platform-guide.md` | Step 3 quality boosters / Step 4 negative prompt | Platform-specific syntax (Midjourney / DALL-E / Flux / SD) |
+| `references/style-dictionary.md` | Step 2 style assembly (按需查) | 200+ curated style/mood/lighting/composition keywords |
+| `references/meta-schema.md` | Step 2 路徑切換時（多張一致 / JSON / 系列）| Composable schema + 9 scope extensions + Parameter Tiers + category-specific negative prompts |
+
+> 蠶食自 [ConardLi/garden-skills/gpt-image-2](https://github.com/ConardLi/garden-skills/tree/main/skills/gpt-image-2) — composable meta-schema（meta-schema.md）+ 18 分類結構化模板索引（references/gpt-image-2-templates/INDEX.md）
