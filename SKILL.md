@@ -3,7 +3,6 @@ name: image-prompt
 description: "prompt, image, generate, write, ai, art, convert, 幫我寫生圖提示詞, 產生圖片 prompt"
 version: 0.1.0
 argument-hint: "描述想要的畫面（中文或英文皆可）"
-disable-model-invocation: true
 ---
 
 # Image Prompt Engineer
