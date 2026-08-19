@@ -1,6 +1,6 @@
 ---
 name: image-prompt
-description: "prompt, image, generate, write, ai, art, convert, 幫我寫生圖提示詞, 產生圖片 prompt"
+description: "prompt, image, generate, write, ai, art, convert, 幫我寫生圖提示詞, 產生圖片 prompt。要真的產生圖片用 /image-gen，修改既有圖片用 /image-edit，不確定用 /prompt-router"
 version: 0.1.0
 argument-hint: "描述想要的畫面（中文或英文皆可）"
 ---
