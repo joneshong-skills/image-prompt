@@ -34,21 +34,32 @@ clarification question before proceeding.
 
 預設走 7-component；當 user 提到「角色變體」「系列」「多張一致」「要 JSON」「要重用」任一關鍵字，切換到 meta-schema。
 
-Assemble the prompt using the **7-Component Framework**:
+Assemble the prompt using the **7-Component Framework**. The brief's defining words lead the
+prompt: 「霧中的阿里山」 opens with "Alishan in thick mist", 「日式極簡客廳」 with "a Japanese
+minimalist living room" — a quality buried later in the prompt comes out weak.
 
 | # | Component | Description | Example |
 |---|-----------|-------------|---------|
-| 1 | **Subject** | Main focal point, clearly described | "a lone samurai standing on a cliff edge" |
+| 1 | **Subject** | Main focal point, clearly described, carrying the brief's defining words | "a lone samurai standing on a cliff edge" |
 | 2 | **Style** | Artistic style or medium | "digital painting, Studio Ghibli inspired" |
 | 3 | **Composition** | Framing, angle, perspective | "wide-angle shot, rule of thirds, low camera angle" |
-| 4 | **Lighting** | Light source, quality, mood | "golden hour backlighting, volumetric god rays" |
+| 4 | **Lighting** | What the light does — direction, softness, time of day. Name the effect, not the gear: "softbox" gets drawn into the frame | "golden hour backlighting, volumetric god rays" |
 | 5 | **Color Palette** | Dominant colors, tone | "warm amber and deep indigo, muted earth tones" |
 | 6 | **Details & Texture** | Surface quality, fine details | "intricate armor engravings, weathered fabric" |
 | 7 | **Atmosphere** | Environmental mood, effects | "misty mountains, cherry blossom petals drifting" |
 
+**When the image carries text** (poster, logo, cover, label, infographic):
+- Give each piece of text once, in double quotes, with its font style and place:
+  `the title "SUMMER WAVE 2026" in bold rounded sans-serif across the top`.
+- End with `no other text`. Without it Gemini invents line-ups, publishers and captions.
+- Never call the text "quoted" or "in quotes" — the model then draws the quote marks around
+  every label.
+- A few words per label; long text comes out misspelled.
+
 ### Step 3 — Apply Quality Boosters
 
-Append proven quality-enhancing tokens based on the target platform:
+Append the quality tokens below based on the target platform (their effect on Gemini was not
+separable in the 2026-09 A/B — see the end of this file):
 
 **Universal boosters** (work across most models):
 - `masterpiece, best quality, highly detailed, sharp focus`
@@ -142,6 +153,8 @@ petals drifting, masterpiece, best quality, highly detailed, 8K UHD
 - Always suggest 2-3 model recommendations based on the style
 - Keep prompt length under 200 tokens for best results (75-150 is ideal)
 - Order components by importance — most models weight early tokens more heavily
+- Aspect ratio goes in the JSON `aspect_ratio`, or in words at the end of the prompt
+  ("horizontal 4:3 format") — never as a bare `4:3` token in the string
 
 ## Additional Resources
 
@@ -149,8 +162,17 @@ petals drifting, masterpiece, best quality, highly detailed, 8K UHD
 
 | File | Load when | Purpose |
 |---|---|---|
-| `references/platform-guide.md` | Step 3 quality boosters / Step 4 negative prompt | Platform-specific syntax (Midjourney / DALL-E / Flux / SD) |
+| `references/platform-guide.md` | Step 3 quality boosters / Step 4 negative prompt / user names a platform | Per-platform syntax: Gemini, Grok, Midjourney (from 80 Explore prompts), GPT-image, Flux, SD |
+| `references/templates.md` | Gemini, when the user asks for paragraph prompts or the layout is fixed (logo, product, comic panel) | Google's six paragraph templates + three of ours; not A/B-tested here |
 | `references/style-dictionary.md` | Step 2 style assembly (按需查) | 200+ curated style/mood/lighting/composition keywords |
 | `references/meta-schema.md` | Step 2 路徑切換時（多張一致 / JSON / 系列）| Composable schema + 9 scope extensions + Parameter Tiers + category-specific negative prompts |
 
 > 蠶食自 [ConardLi/garden-skills/gpt-image-2](https://github.com/ConardLi/garden-skills/tree/main/skills/gpt-image-2) — composable meta-schema（meta-schema.md）+ 18 分類結構化模板索引（references/gpt-image-2-templates/INDEX.md）
+
+> 2026-09-29 blind A/B on Gemini Flash, 30 pairs over two rounds: rewriting this skill as
+> Google-style paragraphs without quality tokens lost 13–17. Paragraph prompts had fewer text
+> errors and scored lower on aesthetics. This file keeps its format and took only targeted
+> fixes: `no other text` (invented text in both rounds), never "quoted" (quote marks drawn,
+> round 2), light as effect not gear and the brief's defining words first (each lost in round 1,
+> won back in round 2), aspect ratio in words (a bare `4:3` token, round 1). Data:
+> `~/workshop/outputs/image-prompt-study/`.
