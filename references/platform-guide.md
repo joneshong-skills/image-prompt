@@ -1,211 +1,122 @@
-# Platform-Specific Prompt Guide
+# Platform Guide
+
+SKILL.md's 7-component prompt is what `/image-gen` sends to Gemini. Use the sections below for
+platform-specific syntax and for any platform the user names. Each section says when it was last checked; an unchecked claim is labelled.
+
+| Platform | Prompt form | Negative channel | Aspect ratio |
+|---|---|---|---|
+| Gemini (web, via `/image-gen`) | 7-component prompt (Google suggests paragraphs — see below) | None — describe the wanted state | In words at the end of the prompt |
+| Grok (`grok-imagine-*` API, via `/image-gen`) | Descriptive paragraph | None | `aspect_ratio` in the API body |
+| Midjourney | Paragraph or short phrase + parameters | `--no a, b` | `--ar W:H` |
+| GPT-image (ChatGPT / OpenAI API) | Descriptive paragraph | None | Size / in the prompt |
+| Flux | Descriptive paragraph | None (guidance-distilled models) | width / height |
+| Stable Diffusion 1.5 / SDXL | Comma-separated tags with weights | Full negative prompt | width / height |
+
+---
+
+## Gemini
+
+Checked 2026-09-29 against Google's "How to prompt Gemini 2.5 Flash Image Generation for the
+best results" (Google Developers Blog).
+
+- Google's guide favours a descriptive paragraph over a keyword list. In this skill's blind A/B
+  (2026-09-29, 30 pairs) paragraph prompts did not beat the 7-component format: fewer text errors,
+  lower aesthetic scores. `templates.md` has the paragraph templates when a user wants them.
+- Worth taking from Google's guide (not tested one by one here): exact text in double quotes
+  with a font style, semantic negatives ("an empty street", not "no cars"), camera language, stating the purpose.
+- `/image-gen` prefixes the prompt with "Create an image of:" — do not add it yourself.
+- Editing an existing image is a different prompt shape ("Using the provided image of X, change
+  only the Y to Z") — that is `/image-edit`'s job.
+- Iterate in conversation: a follow-up "make the light warmer, keep everything else" usually
+  beats rewriting the whole prompt.
+
+## Grok (xAI `grok-imagine-image` API)
+
+Checked 2026-09-29: xAI publishes API parameters but no prompting guide.
+
+- Use the same paragraph as for Gemini; nothing platform-specific is documented.
+- Set aspect ratio with the `aspect_ratio` field (`"16:9"` → 1280x720 measured); the prompt
+  text alone is not the control.
 
 ## Midjourney
 
-### Syntax
-```
-/imagine prompt: [description] --ar [ratio] --v [version] --style [style] --s [stylize] --c [chaos] --q [quality]
-```
+Checked 2026-09-29 by reading 80 prompts from the public Explore "Top day" feed (job pages are
+readable without login; the official docs site was not reachable for this check).
 
-### Key Parameters
+Top images come from two different recipes:
 
-| Parameter | Values | Description |
-|-----------|--------|-------------|
-| `--ar` | `1:1`, `16:9`, `9:16`, `4:3`, `3:2`, `21:9` | Aspect ratio |
-| `--v` | `6.1`, `6`, `5.2` | Model version (latest: 6.1) |
-| `--style` | `raw` | Less opinionated, more photographic |
-| `--s` | `0`–`1000` (default `100`) | Stylization strength |
-| `--c` | `0`–`100` (default `0`) | Chaos / variation |
-| `--q` | `0.25`, `0.5`, `1` | Quality / detail level |
-| `--no` | `text, watermark` | Negative prompt (things to avoid) |
-| `--tile` | (no value) | Seamless tiling pattern |
-| `--seed` | `0`–`4294967295` | Reproducible results |
+- **Short phrase + a style code (20% of the sample)** — "mirror ball --sref 2444940319 --raw",
+  "watercolor, vintage christmas teddy bear --profile baqug5i". The look lives in the code, not
+  the words. `--profile` is a personal aesthetic built from one user's ratings, `--sref` a
+  style reference; neither exists on any other platform, so these prompts do not port.
+- **A long scene paragraph (39% run 60+ words)** — the same moves as a well-filled 7-component prompt: exact
+  placement ("SIDE VIEW… facing LEFT"), a named kind of photograph ("authentic 1950s documentary
+  photo"), mark-making ("scratchy charcoal outlines, dry brush strokes, visible paper grain"),
+  a named palette, and a closing exclusion sentence (21% have one).
 
-### Midjourney v6+ Tips
-- Natural language works better than keyword stuffing
-- Longer, descriptive prompts produce better results
-- Use `--style raw` for photorealism
-- Quotation marks `""` can emphasize specific text rendering
-- Supports multi-prompt with `::` weight syntax: `cat::2 dog::1`
+Quality filler is nearly absent: 6 of 80 prompts contain any of masterpiece / 8k / highly
+detailed / high resolution.
 
-### Quality Boosters (Midjourney)
-```
-masterpiece, award-winning, highly detailed, sharp focus, 8K UHD
-professional photography, cinematic lighting, dramatic composition
-```
+Writing for Midjourney: the SKILL.md prompt, then parameters.
 
----
+| Parameter | Seen in sample | Use |
+|---|---|---|
+| `--ar W:H` | 76% | Always set it |
+| `--profile <code>` | 46% | Only the user's own code — ask, never invent one |
+| `--hd` | 30% | High-resolution mode (not checked against the docs) |
+| `--chaos 5–65` | 26% | Variety across the grid; 10–30 typical |
+| `--raw` / `--style raw` | 20% | Less of Midjourney's default polish; pair with low `--stylize` (≈50) for literal, photographic results |
+| `--stylize` | 16% | Higher leans on Midjourney's own aesthetic, lower follows the words |
+| `--sref <code or URL>` | 15% | A style the user already has |
+| `--exp` | 8% | Seen at 15–30 |
+| `--no a, b` | 5% | Most exclusions are written as a sentence in the prompt instead |
 
-## DALL-E 3 (via ChatGPT / API)
+Sample, per-parameter tallies and the collector: `~/workshop/outputs/image-prompt-study/mj/`.
 
-### Syntax
-Plain English descriptions. No special parameters — DALL-E 3 auto-interprets.
+## GPT-image (ChatGPT / OpenAI API)
 
-### API Parameters
+Not re-checked since the move off DALL-E 3; treat as unverified.
 
-| Parameter | Options | Description |
-|-----------|---------|-------------|
-| `size` | `1024x1024`, `1792x1024`, `1024x1792` | Image dimensions |
-| `quality` | `standard`, `hd` | Detail level |
-| `style` | `vivid`, `natural` | Vivid = hyper-real; Natural = subtle |
-| `n` | `1` | Number of images (always 1 for DALL-E 3) |
+- Paragraph prompts; the model rewrites short prompts internally, so a detailed paragraph keeps
+  control with you.
+- No negative prompt — describe the wanted state.
+- Strong at text in images; still keep text short and quoted.
 
-### DALL-E 3 Tips
-- Accepts and benefits from long, detailed descriptions
-- Automatically rewrites/expands short prompts internally
-- Best for: photorealistic, illustration, digital art
-- Does NOT support negative prompts natively
-- Workaround for negatives: describe what you want, not what to avoid
-- Supports text rendering in images (better than most models)
+## Flux (Black Forest Labs)
 
-### Quality Boosters (DALL-E 3)
-```
-highly detailed, professional quality, sharp focus, vivid colors
-studio lighting, award-winning photography, editorial quality
-```
+Not re-checked in this revision.
 
----
+- Paragraph prompts; long prompts are handled well.
+- No negative prompt on the guidance-distilled models (dev / schnell / pro) — describe the
+  wanted state.
+- Lower guidance (≈2–4) tends to look more natural; higher follows the prompt more literally.
 
-## Flux (by Black Forest Labs)
+## Stable Diffusion 1.5 / SDXL
 
-### Models
-| Model | Speed | Quality | Best For |
-|-------|-------|---------|----------|
-| `flux-pro` | Slow | Highest | Final output, commercial work |
-| `flux-dev` | Medium | High | Development, iteration |
-| `flux-schnell` | Fast | Good | Prototyping, quick tests |
+The one family where tag lists, weights and negative prompts are the native interface — the
+tag-trained checkpoints (especially anime models) learned tags such as `masterpiece` and
+`best quality` from their training captions, so here they do carry meaning.
 
-### Syntax
-Plain English descriptions via API. No special syntax markers.
+Syntax: comma-separated descriptors; `(important:1.3)`, `[less important]`.
 
-### API Parameters (via Replicate / fal.ai / BFL API)
+| Parameter | Typical | Note |
+|---|---|---|
+| `steps` | 20–50 | |
+| `cfg_scale` | 7 | prompt adherence |
+| `sampler` | DPM++ 2M Karras | |
+| `width` / `height` | 1024² SDXL, 512² SD1.5 | |
+| `clip_skip` | 2 for anime models | |
 
-| Parameter | Options | Description |
-|-----------|---------|-------------|
-| `width` | `256`–`1440` (multiples of 32) | Image width |
-| `height` | `256`–`1440` (multiples of 32) | Image height |
-| `num_inference_steps` | `1`–`50` (schnell: 1-4, dev: 20-50) | Denoising steps |
-| `guidance_scale` | `1.0`–`20.0` (default `3.5`) | Prompt adherence |
-| `seed` | integer | Reproducible results |
+Prompt budget: the CLIP text encoder reads 77 tokens; UIs such as A1111 split longer prompts
+into chunks, so keep the terms that matter in the first ~75.
 
-### Flux Tips
-- Excels at photorealism, text rendering, and human anatomy
-- Lower guidance (2.0–4.0) often produces more natural results
-- Supports very long prompts effectively
-- No native negative prompt — describe positively
-- Best text-in-image rendering of any open model
-- Works well with comma-separated descriptors
+Standard negative prompt:
 
-### Quality Boosters (Flux)
-```
-masterpiece, best quality, highly detailed, sharp focus
-professional photography, cinematic, 8K resolution
-photorealistic, high dynamic range, studio quality
-```
-
----
-
-## Stable Diffusion (SDXL / SD 1.5)
-
-### Syntax
-Comma-separated descriptors. Supports weighted tokens.
-
-```
-(important element:1.3), normal element, (less important:0.7)
-```
-
-### Key Parameters
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `steps` | `20`–`50` | Sampling steps (more = detailed, slower) |
-| `cfg_scale` | `7.0` | Classifier-free guidance (prompt adherence) |
-| `sampler` | `DPM++ 2M Karras` | Sampling algorithm |
-| `seed` | random | Reproducible results |
-| `width` / `height` | `1024x1024` (SDXL) | Image dimensions |
-| `clip_skip` | `1`–`2` | Skip CLIP layers (2 for anime) |
-
-### SDXL vs SD 1.5
-
-| Feature | SDXL | SD 1.5 |
-|---------|------|--------|
-| Resolution | 1024x1024 native | 512x512 native |
-| Quality | Higher baseline | Needs more prompting |
-| LoRA ecosystem | Growing | Massive |
-| Speed | Slower | Faster |
-| Negative prompt | Supported | Supported |
-
-### Negative Prompt (Stable Diffusion)
-
-**Standard:**
 ```
 lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit,
 fewer digits, cropped, worst quality, low quality, normal quality,
 jpeg artifacts, signature, watermark, username, blurry
 ```
 
-**For portraits, add:**
-```
-deformed iris, deformed pupils, semi-realistic, cgi, 3d, render, sketch,
-cartoon, drawing, anime, mutated hands and fingers, deformed, distorted,
-disfigured, poorly drawn, bad anatomy, wrong anatomy
-```
-
-**For anime, add:**
-```
-lowres, bad anatomy, bad hands, text, error, missing fingers, extra digit,
-fewer digits, cropped, worst quality, low quality, normal quality,
-jpeg artifacts, signature, watermark, username, blurry, artist name,
-bad-artist, bad-hands-5
-```
-
-### Prompt Weight Syntax
-```
-(keyword)       → weight 1.1
-((keyword))     → weight 1.21
-(keyword:1.5)   → explicit weight 1.5
-[keyword]       → weight 0.9 (de-emphasis)
-```
-
-### Quality Boosters (Stable Diffusion)
-```
-masterpiece, best quality, highly detailed, sharp focus, 8K UHD,
-high resolution, professional, intricate details, beautiful lighting
-```
-
-### Recommended Samplers
-
-| Sampler | Best For |
-|---------|----------|
-| `DPM++ 2M Karras` | General purpose, fast |
-| `DPM++ SDE Karras` | Fine details, slower |
-| `Euler a` | Creative, varied results |
-| `DDIM` | Consistent, reproducible |
-
----
-
-## Cross-Platform Comparison
-
-| Feature | Midjourney | DALL-E 3 | Flux | Stable Diffusion |
-|---------|-----------|----------|------|-----------------|
-| Negative prompt | `--no` | Not supported | Not supported | Full support |
-| Aspect ratio | `--ar` | API size param | width/height | width/height |
-| Prompt weighting | `::` syntax | Not supported | Not supported | `()` or `:weight` |
-| Text rendering | Good (v6+) | Best | Excellent | Poor |
-| Photorealism | Excellent | Excellent | Best | Good (SDXL) |
-| Anime/Illustration | Good | Good | Good | Best (with LoRA) |
-| Speed | Medium | Fast | Varies by model | Varies |
-| Local/Self-hosted | No | No | Yes | Yes |
-| Max prompt length | ~6000 chars | ~4000 chars | ~2000 tokens | 77 tokens (SD1.5) / 150 (SDXL) |
-
-## Platform Selection Guide
-
-| Goal | Recommended Platform |
-|------|---------------------|
-| Best photorealism | Flux Pro or Midjourney v6 `--style raw` |
-| Best anime/illustration | Stable Diffusion + anime LoRA |
-| Best text in image | Flux Pro or DALL-E 3 |
-| Fastest iteration | Flux Schnell or DALL-E 3 |
-| Most control | Stable Diffusion (full parameter access) |
-| Easiest to use | DALL-E 3 (natural language, auto-enhance) |
-| Commercial use | Check each platform's license terms |
+Portraits add: `deformed iris, deformed pupils, mutated hands and fingers, poorly drawn,
+wrong anatomy`. Per-category additions: `meta-schema.md` → 常見失敗.
