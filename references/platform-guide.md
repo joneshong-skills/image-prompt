@@ -45,8 +45,8 @@ readable without login; the official docs site was not reachable for this check)
 
 Top images come from two different recipes:
 
-- **Short phrase + a style code (20% of the sample)** — "mirror ball --sref 2444940319 --raw",
-  "watercolor, vintage christmas teddy bear --profile baqug5i". The look lives in the code, not
+- **Short phrase + a style code (20% of the sample)** — "mirror ball --sref <code> --raw",
+  "watercolor, vintage christmas teddy bear --profile <code>". The look lives in the code, not
   the words. `--profile` is a personal aesthetic built from one user's ratings, `--sref` a
   style reference; neither exists on any other platform, so these prompts do not port.
 - **A long scene paragraph (39% run 60+ words)** — the same moves as a well-filled 7-component prompt: exact
@@ -71,7 +71,8 @@ Writing for Midjourney: the SKILL.md prompt, then parameters.
 | `--exp` | 8% | Seen at 15–30 |
 | `--no a, b` | 5% | Most exclusions are written as a sentence in the prompt instead |
 
-Sample, per-parameter tallies and the collector: `~/workshop/outputs/image-prompt-study/mj/`.
+The sample, per-parameter tallies and the collector script are kept by the maintainer, outside
+this repo.
 
 ## GPT-image (ChatGPT / OpenAI API)
 

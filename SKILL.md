@@ -178,5 +178,5 @@ petals drifting, masterpiece, best quality, highly detailed, 8K UHD
 > fixes: `no other text` (invented text in both rounds), never "quoted" (quote marks drawn,
 > round 2), light as effect not gear and the brief's defining words first (each lost in round 1,
 > won back in round 2 — except p09, where old won both rounds), aspect ratio in words (a bare
-> `4:3` token, round 1). Each fix changed alongside others, so none is proven on its own. Data:
-> `~/workshop/outputs/image-prompt-study/`.
+> `4:3` token, round 1). Each fix changed alongside others, so none is proven on its own. The study data
+> is kept by the maintainer, outside this repo.
